@@ -7,6 +7,9 @@ export const CONFERENCE = {
   name: "TELPSAM Conference 2026",
   dates: "September 18–21, 2026",
   venue: "Pentecost Convention Center, Millennium City Road, Kasoa",
+  anniversary: "25th Anniversary",
+  theme: "Raising Memorials of His Faithfulness",
+  verse: "Joshua 4:6–7",
 
   // Mobile Money payment details.
   momo: {

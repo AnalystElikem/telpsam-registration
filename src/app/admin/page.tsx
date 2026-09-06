@@ -34,7 +34,7 @@ export default async function AdminPage({
         <div className="card p-7">
           <h1 className="text-xl font-bold text-ink">Registrations admin</h1>
           <p className="mt-1 text-sm text-body">Enter the admin password to view registrations.</p>
-          {error && <p className="mt-3 rounded-lg bg-red-50 p-2 text-sm text-danger">Incorrect password.</p>}
+          {error && <p className="mt-3 rounded-lg bg-red-soft p-2 text-sm text-danger">Incorrect password.</p>}
           <form action={loginAdmin} className="mt-4 space-y-3">
             <input name="password" type="password" required className="field" placeholder="Admin password" autoFocus />
             <button className="btn btn-primary w-full">Sign in</button>
@@ -55,7 +55,7 @@ export default async function AdminPage({
     <main className="mx-auto max-w-6xl px-5 py-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="flex items-center gap-2 text-2xl font-bold text-ink">
-          <Users className="h-6 w-6 text-teal" /> Registrations
+          <Users className="h-6 w-6 text-blue" /> Registrations
           <span className="rounded-full bg-canvas px-2.5 py-0.5 text-sm font-semibold text-body">{rows.length}</span>
         </h1>
         <div className="flex items-center gap-2">

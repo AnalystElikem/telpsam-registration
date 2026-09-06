@@ -100,7 +100,7 @@ export default function RegistrationForm() {
         <span className="label">Are you a student or a worker? <span className="text-danger">*</span></span>
         <div className="mt-1 flex flex-wrap gap-3">
           {ATTENDEE_TYPES.map((t) => (
-            <label key={t} className="flex cursor-pointer items-center gap-2 rounded-lg border border-line px-4 py-2 text-sm has-[:checked]:border-navy has-[:checked]:bg-canvas">
+            <label key={t} className="flex cursor-pointer items-center gap-2 rounded-lg border border-line px-4 py-2 text-sm has-[:checked]:border-blue has-[:checked]:bg-blue-soft">
               <input
                 type="radio"
                 name="attendee_type"
@@ -183,7 +183,7 @@ export default function RegistrationForm() {
       </div>
 
       {/* Fee acknowledgement */}
-      <label className="flex items-start gap-3 rounded-lg bg-gold-soft/50 p-4 text-sm text-ink">
+      <label className="flex items-start gap-3 rounded-lg border border-blue/20 bg-blue-soft p-4 text-sm text-ink">
         <input type="checkbox" name="fee_acknowledged" required className="mt-0.5 h-4 w-4 shrink-0" />
         <span>I understand the conference fees: <strong>{feeLine}</strong>, and that I may pay ahead of the conference or when I arrive.</span>
       </label>

@@ -12,7 +12,7 @@ export default function ThankYouPage() {
       <p className="mt-2 text-body">
         Thank you for registering your intent to attend {CONFERENCE.name}. Your details have been received.
       </p>
-      <div className="mt-6 w-full rounded-lg bg-gold-soft/50 p-4 text-left text-sm text-ink">
+      <div className="mt-6 w-full rounded-lg border border-blue/20 bg-blue-soft p-4 text-left text-sm text-ink">
         <p className="font-semibold">Before the conference, please remember:</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-body">
           <li>Pay your fee by MoMo to <strong className="text-ink">{CONFERENCE.momo.number}</strong> ({CONFERENCE.momo.name}) using your name as the reference, or pay at the venue.</li>
