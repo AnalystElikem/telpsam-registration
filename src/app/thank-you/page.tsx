@@ -20,7 +20,7 @@ export default function ThankYouPage() {
           <li>Keep your payment reference number for verification at the venue.</li>
         </ul>
       </div>
-      <Link href="/" className="btn btn-outline mt-6">Register someone else</Link>
+      <Link href="/register" className="btn btn-outline mt-6">Register someone else</Link>
     </main>
   );
 }

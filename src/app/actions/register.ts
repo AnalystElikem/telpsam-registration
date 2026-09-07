@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { ATTENDEE_TYPES } from "@/lib/config";
 
 export async function registerAttendee(formData: FormData) {
@@ -16,13 +16,14 @@ export async function registerAttendee(formData: FormData) {
   const job_title = g("job_title");
   const feeAck = formData.get("fee_acknowledged") === "on";
 
-  // Server-side validation (belt-and-braces on top of the form's own checks).
+  // Server-side validation. Phone is required; email is optional (only checked
+  // for a valid shape when the person actually enters one).
   const errors: string[] = [];
   if (full_name.split(/\s+/).filter(Boolean).length < 2) {
     errors.push("Please enter at least two names (for example, first and last name).");
   }
   if (!phone) errors.push("A phone number is required.");
-  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.push("Please enter a valid email address.");
+  if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.push("That email address doesn't look right.");
   if (!ATTENDEE_TYPES.map((t) => t.toLowerCase()).includes(attendee_type)) {
     errors.push("Please indicate whether you are a student or a worker.");
   }
@@ -32,12 +33,31 @@ export async function registerAttendee(formData: FormData) {
   if (!feeAck) errors.push("Please confirm that you understand the conference fees.");
 
   if (errors.length) {
-    redirect(`/?error=${encodeURIComponent(errors.join(" "))}#form`);
+    redirect(`/register?error=${encodeURIComponent(errors.join(" "))}#form`);
+  }
+
+  // Use the service-role client (server-only): it can read for the duplicate
+  // check and isn't affected by any row-level-security misconfiguration.
+  const admin = createAdminClient();
+
+  // Friendly duplicate guard: same phone (and name) already registered.
+  const { data: existing } = await admin
+    .from("conference_registrations")
+    .select("id, full_name")
+    .eq("phone", phone)
+    .ilike("full_name", full_name)
+    .limit(1)
+    .maybeSingle();
+  if (existing) {
+    redirect(
+      `/register?error=${encodeURIComponent(
+        "It looks like this name and phone number are already registered. You only need to register once — no need to submit again."
+      )}#form`
+    );
   }
 
   const yearNum = parseInt(g("completion_year"), 10);
-  const supabase = await createClient();
-  const { error } = await supabase.from("conference_registrations").insert({
+  const { error } = await admin.from("conference_registrations").insert({
     full_name,
     date_of_birth: g("date_of_birth") || null,
     gender: g("gender") || null,
@@ -49,7 +69,7 @@ export async function registerAttendee(formData: FormData) {
     workplace: isWorker ? workplace : null,
     job_title: isWorker ? job_title : null,
     phone,
-    email,
+    email: email || null,
     emergency_contact_name: g("emergency_contact_name") || null,
     emergency_contact_phone: g("emergency_contact_phone") || null,
     dietary_medical: g("dietary_medical") || null,
@@ -59,7 +79,8 @@ export async function registerAttendee(formData: FormData) {
   });
 
   if (error) {
-    redirect(`/?error=${encodeURIComponent("Sorry, something went wrong saving your registration. Please try again.")}#form`);
+    // Surface the real reason so it's diagnosable (e.g. missing table / column).
+    redirect(`/register?error=${encodeURIComponent(`Could not save: ${error.message}`)}#form`);
   }
 
   redirect("/thank-you");

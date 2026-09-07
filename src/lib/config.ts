@@ -25,6 +25,17 @@ export const CONFERENCE = {
   ] as { label: string; amount: number }[],
 };
 
+// Slider photos (in /public/photos). Add more files there and list them here.
+export const PHOTOS: string[] = [
+  "/photos/conf-1.jpg",
+  "/photos/conf-2.jpg",
+  "/photos/conf-3.jpg",
+  "/photos/conf-4.jpg",
+  "/photos/conf-5.jpg",
+  "/photos/conf-6.jpg",
+  "/photos/conf-7.jpg",
+];
+
 export const EDUCATION_LEVELS = ["JHS", "SHS", "Tertiary", "Postgraduate"] as const;
 export const GENDERS = ["Male", "Female"] as const;
 export const ATTENDEE_TYPES = ["Student", "Worker"] as const;

@@ -25,7 +25,7 @@ create table if not exists public.conference_registrations (
   job_title               text,               -- if worker
 
   phone                   text not null,
-  email                   text not null,
+  email                   text,
 
   emergency_contact_name  text,
   emergency_contact_phone text,
@@ -37,6 +37,9 @@ create table if not exists public.conference_registrations (
 );
 
 create index if not exists conf_reg_created_idx on public.conference_registrations (created_at desc);
+
+-- If an earlier version of this table was created with a NOT NULL email, relax it.
+alter table public.conference_registrations alter column email drop not null;
 
 alter table public.conference_registrations enable row level security;
 

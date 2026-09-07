@@ -137,8 +137,8 @@ export default function RegistrationForm() {
           <input id="phone" name="phone" type="tel" required className="field" placeholder="e.g. 024 000 0000" autoComplete="tel" />
         </div>
         <div>
-          <label className="label" htmlFor="email">Email <span className="text-danger">*</span></label>
-          <input id="email" name="email" type="email" required className="field" placeholder="you@email.com" autoComplete="email" />
+          <label className="label" htmlFor="email">Email <span className="text-muted">(optional)</span></label>
+          <input id="email" name="email" type="email" className="field" placeholder="you@email.com" autoComplete="email" />
         </div>
       </div>
 
