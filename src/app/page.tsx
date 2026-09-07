@@ -81,7 +81,7 @@ export default function LandingPage() {
               <li>When paying by MoMo, use <strong className="text-ink">your own name</strong> as the reference.</li>
               <li className="flex items-start gap-1">
                 <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-red" />
-                Send your payment proof by WhatsApp to <strong className="text-ink">&nbsp;{CONFERENCE.momo.number}</strong>.
+                Send your payment proof by WhatsApp to <strong className="text-ink">&nbsp;{CONFERENCE.momo.whatsapp}</strong>.
               </li>
               <li>Note your payment reference number for verification at the venue.</li>
             </ul>

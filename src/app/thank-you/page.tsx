@@ -16,7 +16,7 @@ export default function ThankYouPage() {
         <p className="font-semibold">Before the conference, please remember:</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-body">
           <li>Pay your fee by MoMo to <strong className="text-ink">{CONFERENCE.momo.number}</strong> ({CONFERENCE.momo.name}) using your name as the reference, or pay at the venue.</li>
-          <li>Send your payment proof by WhatsApp to the same number.</li>
+          <li>Send your payment proof by WhatsApp to <strong className="text-ink">{CONFERENCE.momo.whatsapp}</strong>.</li>
           <li>Keep your payment reference number for verification at the venue.</li>
         </ul>
       </div>

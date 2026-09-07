@@ -15,6 +15,7 @@ export const CONFERENCE = {
   momo: {
     number: "054 376 0511",
     name: "TELPSAM",
+    whatsapp: "0556524488", // where to send payment proof
   },
 
   // Fee schedule (GHS).
