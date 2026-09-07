@@ -17,6 +17,7 @@ function SubmitButton() {
 }
 
 const feeLine = CONFERENCE.fees.map((f) => `GHS ${f.amount} (${f.label})`).join(", ");
+const TODAY = new Date().toISOString().slice(0, 10); // no future birthdates
 
 export default function RegistrationForm() {
   const [isWorker, setIsWorker] = useState(false);
@@ -49,7 +50,8 @@ export default function RegistrationForm() {
         {/* Date of birth */}
         <div>
           <label className="label" htmlFor="date_of_birth">Date of birth <span className="text-danger">*</span></label>
-          <input id="date_of_birth" name="date_of_birth" type="date" required className="field" />
+          <input id="date_of_birth" name="date_of_birth" type="date" required max={TODAY} min="1930-01-01" className="field" onFocus={(e) => e.currentTarget.showPicker?.()} />
+          <p className="mt-1 text-xs text-muted">Tap to open the calendar.</p>
         </div>
         {/* Gender */}
         <div>
