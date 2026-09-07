@@ -22,6 +22,12 @@ export default function RegistrationForm() {
 
   return (
     <form id="form" action={registerAttendee} className="card mt-6 space-y-5 p-6">
+      {/* Honeypot: hidden from people, tempting to bots. If filled, we drop it. */}
+      <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", overflow: "hidden" }}>
+        <label htmlFor="website">Website</label>
+        <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+      </div>
+
       {/* Full name */}
       <div>
         <label className="label" htmlFor="full_name">Full name <span className="text-danger">*</span></label>
@@ -190,7 +196,8 @@ export default function RegistrationForm() {
 
       <SubmitButton />
       <p className="text-center text-xs text-muted">
-        This is a registration of intent and data collection only. Everything else is handled at the venue.
+        Your details are used only for planning the TELPSAM Conference and are not shared with anyone else.
+        This is a registration of intent and data collection only; everything else is handled at the venue.
       </p>
     </form>
   );

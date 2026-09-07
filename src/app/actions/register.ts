@@ -7,6 +7,10 @@ import { ATTENDEE_TYPES } from "@/lib/config";
 export async function registerAttendee(formData: FormData) {
   const g = (k: string) => String(formData.get(k) || "").trim();
 
+  // Honeypot: a hidden field no real person fills. If it has content, it's a
+  // bot — pretend success (so it doesn't retry) but save nothing.
+  if (g("website")) redirect("/thank-you");
+
   const full_name = g("full_name");
   const phone = g("phone");
   const email = g("email");
