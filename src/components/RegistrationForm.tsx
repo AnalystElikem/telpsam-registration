@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { registerAttendee } from "@/app/actions/register";
-import { branchRegions, ASSOCIATE, OTHER_BRANCH } from "@/data/branches";
+import BranchSelect from "@/components/BranchSelect";
+import { ASSOCIATE } from "@/data/branches";
 import { CONFERENCE, EDUCATION_LEVELS, GENDERS, ATTENDEE_TYPES, COMPLETION_YEARS } from "@/lib/config";
 
 function SubmitButton() {
@@ -62,18 +63,9 @@ export default function RegistrationForm() {
 
       {/* Branch */}
       <div>
-        <label className="label" htmlFor="branch">Church branch <span className="text-danger">*</span></label>
-        <select id="branch" name="branch" required defaultValue="" className="field">
-          <option value="" disabled>Select your branch…</option>
-          <option value={ASSOCIATE}>{ASSOCIATE}</option>
-          {branchRegions.map((r) => (
-            <optgroup key={r.region} label={r.region}>
-              {r.branches.map((b) => <option key={`${r.region}-${b}`} value={b}>{b}</option>)}
-            </optgroup>
-          ))}
-          <option value={OTHER_BRANCH}>{OTHER_BRANCH}</option>
-        </select>
-        <p className="mt-1 text-xs text-muted">If you are not a church member, choose “{ASSOCIATE}”.</p>
+        <label className="label">Church branch <span className="text-danger">*</span></label>
+        <BranchSelect />
+        <p className="mt-1 text-xs text-muted">Start typing to find your branch. If you are not a church member, choose “{ASSOCIATE}”.</p>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">

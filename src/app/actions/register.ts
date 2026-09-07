@@ -27,6 +27,7 @@ export async function registerAttendee(formData: FormData) {
     errors.push("Please enter at least two names (for example, first and last name).");
   }
   if (!phone) errors.push("A phone number is required.");
+  if (!g("branch")) errors.push("Please choose your church branch (or Associate if you're not a member).");
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) errors.push("That email address doesn't look right.");
   if (!ATTENDEE_TYPES.map((t) => t.toLowerCase()).includes(attendee_type)) {
     errors.push("Please indicate whether you are a student or a worker.");
