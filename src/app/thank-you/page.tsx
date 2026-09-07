@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
-import { CONFERENCE } from "@/lib/config";
+import { CONFERENCE, telHref, waHref } from "@/lib/config";
 
 export const metadata = { title: `Registered — ${CONFERENCE.name}` };
 
@@ -15,8 +15,8 @@ export default function ThankYouPage() {
       <div className="mt-6 w-full rounded-lg border border-blue/20 bg-blue-soft p-4 text-left text-sm text-ink">
         <p className="font-semibold">Before the conference, please remember:</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-body">
-          <li>Pay your fee by MoMo to <strong className="text-ink">{CONFERENCE.momo.number}</strong> ({CONFERENCE.momo.name}) using your name as the reference, or pay at the venue.</li>
-          <li>Send your payment proof by WhatsApp to <strong className="text-ink">{CONFERENCE.momo.whatsapp}</strong>.</li>
+          <li>Pay your fee by MoMo to <a href={telHref(CONFERENCE.momo.number)} className="font-semibold text-blue underline decoration-blue/40 underline-offset-2">{CONFERENCE.momo.number}</a> ({CONFERENCE.momo.name}) using your name as the reference, or pay at the venue.</li>
+          <li>Send your payment proof by WhatsApp to <a href={waHref(CONFERENCE.momo.whatsapp)} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue underline decoration-blue/40 underline-offset-2">{CONFERENCE.momo.whatsapp}</a>.</li>
           <li>Keep your payment reference number for verification at the venue.</li>
         </ul>
       </div>

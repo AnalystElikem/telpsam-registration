@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Smartphone, MessageCircle, BedDouble, ArrowRight, ChevronDown } from "lucide-react";
 import BackgroundSlider from "@/components/BackgroundSlider";
-import { CONFERENCE, PHOTOS } from "@/lib/config";
+import { CONFERENCE, PHOTOS, telHref, waHref } from "@/lib/config";
 
 export default function LandingPage() {
   return (
@@ -73,7 +73,10 @@ export default function LandingPage() {
           </div>
           <div className="mt-4 rounded-lg bg-canvas p-4 text-sm text-body">
             <p>
-              Pay by Mobile Money to <strong className="text-ink">{CONFERENCE.momo.number}</strong>{" "}
+              Pay by Mobile Money to{" "}
+              <a href={telHref(CONFERENCE.momo.number)} className="font-semibold text-blue underline decoration-blue/40 underline-offset-2">
+                {CONFERENCE.momo.number}
+              </a>{" "}
               (<strong className="text-ink">{CONFERENCE.momo.name}</strong>). You may pay ahead of the
               conference or when you arrive.
             </p>
@@ -81,7 +84,12 @@ export default function LandingPage() {
               <li>When paying by MoMo, use <strong className="text-ink">your own name</strong> as the reference.</li>
               <li className="flex items-start gap-1">
                 <MessageCircle className="mt-0.5 h-4 w-4 shrink-0 text-red" />
-                Send your payment proof by WhatsApp to <strong className="text-ink">&nbsp;{CONFERENCE.momo.whatsapp}</strong>.
+                <span>
+                  Send your payment proof by WhatsApp to{" "}
+                  <a href={waHref(CONFERENCE.momo.whatsapp)} target="_blank" rel="noopener noreferrer" className="font-semibold text-blue underline decoration-blue/40 underline-offset-2">
+                    {CONFERENCE.momo.whatsapp}
+                  </a>.
+                </span>
               </li>
               <li>Note your payment reference number for verification at the venue.</li>
             </ul>

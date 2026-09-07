@@ -37,6 +37,11 @@ export const PHOTOS: string[] = [
   "/photos/conf-7.jpg",
 ];
 
+// Tappable-number helpers. tel: opens the dialer (long-press to copy);
+// wa.me opens WhatsApp. Ghana numbers: drop the leading 0, prefix 233.
+export const telHref = (n: string) => `tel:${n.replace(/\s+/g, "").replace(/^0/, "+233")}`;
+export const waHref = (n: string) => `https://wa.me/${n.replace(/\D/g, "").replace(/^0/, "233")}`;
+
 export const EDUCATION_LEVELS = ["JHS", "SHS", "Tertiary", "Postgraduate"] as const;
 export const GENDERS = ["Male", "Female"] as const;
 export const ATTENDEE_TYPES = ["Student", "Worker"] as const;
