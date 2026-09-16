@@ -24,6 +24,11 @@ const COLUMNS: { key: string; header: string }[] = [
   { key: "payment_plan", header: "Payment plan" },
   { key: "momo_reference", header: "MoMo reference" },
   { key: "fee_acknowledged", header: "Fee acknowledged" },
+  { key: "amount_paid", header: "Amount paid (GHS)" },
+  { key: "room_assigned", header: "Room assigned" },
+  { key: "received_by", header: "Received by" },
+  { key: "payment_note", header: "Payment note" },
+  { key: "updated_at", header: "Payment/room updated at" },
 ];
 
 function csvCell(v: unknown): string {
