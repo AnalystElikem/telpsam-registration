@@ -43,9 +43,9 @@ const paymentLabel = (p: string | null) =>
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; q?: string; saved?: string; err?: string; errId?: string }>;
+  searchParams: Promise<{ error?: string; q?: string; saved?: string; cleared?: string; err?: string; errId?: string }>;
 }) {
-  const { error, q, saved, err, errId } = await searchParams;
+  const { error, q, saved, cleared, err, errId } = await searchParams;
   const ERR: Record<string, string> = {
     conflict: "This record changed since you opened it — reload the page and try again.",
     note: "A note is required when the amount differs from the expected fee.",
@@ -248,6 +248,11 @@ export default async function AdminPage({
                 {saved === r.id && (
                   <p className="mt-2 flex items-center gap-1 text-xs font-medium text-success">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Saved.
+                  </p>
+                )}
+                {cleared === r.id && (
+                  <p className="mt-2 flex items-center gap-1 text-xs font-medium text-muted">
+                    <CheckCircle2 className="h-3.5 w-3.5" /> Entry cleared.
                   </p>
                 )}
 

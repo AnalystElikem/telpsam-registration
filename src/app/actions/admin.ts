@@ -108,6 +108,42 @@ export async function updateRegistration(formData: FormData) {
   redirect(`/admin?saved=${id}${qs}`);
 }
 
+// Clear a registrant's payment/room entry (e.g. a record entered by mistake).
+// Resets the fields and logs the clear so it's still traceable.
+export async function clearRegistration(formData: FormData) {
+  if (!(await isAdmin())) redirect("/admin");
+  const id = String(formData.get("id") || "");
+  if (!id) redirect("/admin");
+  const received_by = String(formData.get("received_by") || "").trim() || null;
+  const expected_updated_at = String(formData.get("expected_updated_at") || "").trim();
+  const q = String(formData.get("q") || "").trim();
+  const qs = q ? `&q=${encodeURIComponent(q)}` : "";
+
+  const supabase = createAdminClient();
+  const { data: reg } = await supabase
+    .from("conference_registrations")
+    .select("updated_at")
+    .eq("id", id)
+    .maybeSingle();
+  if (!reg) redirect("/admin");
+  if (!sameStamp(expected_updated_at, reg.updated_at ?? "")) redirect(`/admin?err=conflict&errId=${id}${qs}`);
+
+  await supabase.from("registration_audit").insert({
+    registration_id: id,
+    editor: received_by,
+    amount_paid: null,
+    room_assigned: null,
+    payment_note: "Cleared",
+  });
+  await supabase
+    .from("conference_registrations")
+    .update({ amount_paid: null, room_assigned: null, received_by: null, payment_note: null, updated_at: new Date().toISOString() })
+    .eq("id", id);
+
+  revalidatePath("/admin");
+  redirect(`/admin?cleared=${id}${qs}`);
+}
+
 // --- Room management (rebalance ladies/gentlemen, add or remove rooms) --------
 
 async function roomOccupied(supabase: ReturnType<typeof createAdminClient>, code: string): Promise<boolean> {

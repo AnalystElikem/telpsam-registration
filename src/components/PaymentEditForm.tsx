@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { updateRegistration } from "@/app/actions/admin";
+import { updateRegistration, clearRegistration } from "@/app/actions/admin";
 
 type RoomOpt = { code: string; gender: string; beds: number };
 
@@ -134,7 +134,20 @@ export default function PaymentEditForm({
         />
       </div>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        {(amount != null || room || receivedBy || note) && (
+          <button
+            type="submit"
+            formAction={clearRegistration}
+            formNoValidate
+            onClick={(e) => {
+              if (!confirm("Clear this payment/room entry? The record stays; only these details are reset.")) e.preventDefault();
+            }}
+            className="btn btn-outline !py-2 !text-danger"
+          >
+            Clear entry
+          </button>
+        )}
         <button className="btn btn-primary !py-2">Save</button>
       </div>
     </form>
