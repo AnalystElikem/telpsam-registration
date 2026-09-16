@@ -16,6 +16,7 @@ type Row = {
   phone: string;
   email: string | null;
   branch: string | null;
+  gender: string | null;
   education_level: string | null;
   attendee_type: string | null;
   payment_plan: string | null;
@@ -42,9 +43,16 @@ const paymentLabel = (p: string | null) =>
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; q?: string; saved?: string; noteReq?: string }>;
+  searchParams: Promise<{ error?: string; q?: string; saved?: string; err?: string; errId?: string }>;
 }) {
-  const { error, q, saved, noteReq } = await searchParams;
+  const { error, q, saved, err, errId } = await searchParams;
+  const ERR: Record<string, string> = {
+    conflict: "This record changed since you opened it — reload the page and try again.",
+    note: "A note is required when the amount differs from the expected fee.",
+    roomfull: "That room is already full (6/6). Please choose another.",
+    roomgender: "That room is on the wrong floor for this person's gender.",
+    roombad: "That room isn't recognised.",
+  };
   const authed = await isAdmin();
 
   if (!authed) {
@@ -66,9 +74,21 @@ export default async function AdminPage({
   const supabase = createAdminClient();
   const { data } = await supabase
     .from("conference_registrations")
-    .select("id, created_at, full_name, phone, email, branch, education_level, attendee_type, payment_plan, momo_reference, amount_paid, room_assigned, received_by, payment_note, updated_at")
+    .select("id, created_at, full_name, phone, email, branch, gender, education_level, attendee_type, payment_plan, momo_reference, amount_paid, room_assigned, received_by, payment_note, updated_at")
     .order("created_at", { ascending: false });
   const all = (data as Row[]) ?? [];
+
+  // Rooms (for the allocation dropdown) and how many people are in each so far.
+  const { data: roomData } = await supabase
+    .from("conference_rooms")
+    .select("code, gender, beds, sort")
+    .order("sort");
+  const rooms = (roomData as { code: string; gender: string; beds: number; sort: number }[]) ?? [];
+  const occupancy: Record<string, number> = {};
+  for (const r of all) {
+    const c = (r.room_assigned || "").trim();
+    if (c) occupancy[c] = (occupancy[c] ?? 0) + 1;
+  }
 
   // Summary over ALL rows.
   const total = all.length;
@@ -88,6 +108,23 @@ export default async function AdminPage({
       )
     : all;
 
+  // Edit history for the displayed registrants (every save is logged).
+  type Audit = { registration_id: string; editor: string | null; amount_paid: number | null; room_assigned: string | null; created_at: string };
+  const ids = rows.map((r) => r.id);
+  const { data: auditData } = ids.length
+    ? await supabase
+        .from("registration_audit")
+        .select("registration_id, editor, amount_paid, room_assigned, created_at")
+        .in("registration_id", ids)
+        .order("created_at", { ascending: false })
+    : { data: [] as Audit[] };
+  const historyByReg = new Map<string, Audit[]>();
+  for (const a of (auditData as Audit[]) ?? []) {
+    const list = historyByReg.get(a.registration_id) ?? [];
+    list.push(a);
+    historyByReg.set(a.registration_id, list);
+  }
+
   return (
     <main className="mx-auto max-w-4xl px-5 py-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -104,6 +141,12 @@ export default async function AdminPage({
         </div>
       </div>
       <p className="mt-1 text-sm text-muted">{CONFERENCE.name}</p>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <a href="/admin" className="rounded-full bg-blue px-3 py-1 text-xs font-semibold text-white">Registrations</a>
+        <a href="/admin/payments" className="rounded-full border border-line px-3 py-1 text-xs font-semibold text-blue hover:bg-canvas">Payments</a>
+        <a href="/admin/rooms" className="rounded-full border border-line px-3 py-1 text-xs font-semibold text-blue hover:bg-canvas">Rooms</a>
+      </div>
 
       {/* Summary */}
       <div className="mt-5 grid grid-cols-3 gap-2 sm:grid-cols-6">
@@ -191,17 +234,37 @@ export default async function AdminPage({
                   room={r.room_assigned}
                   receivedBy={r.received_by}
                   note={r.payment_note}
+                  updatedAt={r.updated_at}
+                  gender={r.gender}
+                  rooms={rooms}
+                  occupancy={occupancy}
                 />
 
-                {noteReq === r.id && (
+                {err && errId === r.id && (
                   <p className="mt-2 flex items-center gap-1 text-xs font-medium text-danger">
-                    <AlertCircle className="h-3.5 w-3.5" /> A note is required when the amount differs from the expected fee.
+                    <AlertCircle className="h-3.5 w-3.5" /> {ERR[err] || "Couldn't save — please try again."}
                   </p>
                 )}
                 {saved === r.id && (
                   <p className="mt-2 flex items-center gap-1 text-xs font-medium text-success">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Saved.
                   </p>
+                )}
+
+                {(historyByReg.get(r.id)?.length ?? 0) > 0 && (
+                  <details className="mt-2 text-xs">
+                    <summary className="cursor-pointer text-muted hover:text-blue">
+                      Edit history ({historyByReg.get(r.id)!.length})
+                    </summary>
+                    <ul className="mt-1 space-y-0.5 border-l-2 border-line pl-3 text-muted">
+                      {historyByReg.get(r.id)!.map((h, i) => (
+                        <li key={i}>
+                          {new Date(h.created_at).toLocaleString()} — {h.editor || "?"} · GHS {h.amount_paid ?? "—"}
+                          {h.room_assigned ? ` · ${h.room_assigned}` : ""}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
                 )}
               </div>
             );
