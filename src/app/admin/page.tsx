@@ -1,8 +1,10 @@
-import { Download, LogOut, Users, Search, CheckCircle2, Clock3 } from "lucide-react";
+import { Download, LogOut, Users, Search, CheckCircle2, Clock3, AlertCircle } from "lucide-react";
 import { isAdmin } from "@/lib/adminAuth";
-import { loginAdmin, logoutAdmin, updateRegistration } from "@/app/actions/admin";
+import { loginAdmin, logoutAdmin } from "@/app/actions/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { CONFERENCE } from "@/lib/config";
+import { expectedFee } from "@/lib/fees";
+import PaymentEditForm from "@/components/PaymentEditForm";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Admin — Registrations" };
@@ -40,9 +42,9 @@ const paymentLabel = (p: string | null) =>
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; q?: string; saved?: string }>;
+  searchParams: Promise<{ error?: string; q?: string; saved?: string; noteReq?: string }>;
 }) {
-  const { error, q, saved } = await searchParams;
+  const { error, q, saved, noteReq } = await searchParams;
   const authed = await isAdmin();
 
   if (!authed) {
@@ -181,32 +183,21 @@ export default async function AdminPage({
                   )}
                 </div>
 
-                <form action={updateRegistration} className="mt-3 space-y-3">
-                  <input type="hidden" name="id" value={r.id} />
-                  <input type="hidden" name="q" value={q || ""} />
-                  <div className="grid items-end gap-3 sm:grid-cols-3">
-                    <div>
-                      <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-muted">Amount paid (GHS)</label>
-                      <input name="amount_paid" type="number" min="0" step="1" defaultValue={r.amount_paid ?? ""} className="field !py-2" placeholder="0" />
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-muted">Room</label>
-                      <input name="room_assigned" defaultValue={r.room_assigned ?? ""} className="field !py-2" placeholder="e.g. B12" />
-                    </div>
-                    <div>
-                      <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-muted">Received by</label>
-                      <input name="received_by" defaultValue={r.received_by ?? ""} required className="field !py-2" placeholder="Your name" />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-muted">Note (e.g. reason for a partial payment)</label>
-                    <textarea name="payment_note" rows={2} defaultValue={r.payment_note ?? ""} className="field !py-2" placeholder="Optional — e.g. paid GHS 100, balance to be paid at the venue" />
-                  </div>
-                  <div className="flex justify-end">
-                    <button className="btn btn-primary !py-2">Save</button>
-                  </div>
-                </form>
+                <PaymentEditForm
+                  id={r.id}
+                  q={q || ""}
+                  expected={expectedFee(r.attendee_type, r.education_level)}
+                  amount={r.amount_paid}
+                  room={r.room_assigned}
+                  receivedBy={r.received_by}
+                  note={r.payment_note}
+                />
 
+                {noteReq === r.id && (
+                  <p className="mt-2 flex items-center gap-1 text-xs font-medium text-danger">
+                    <AlertCircle className="h-3.5 w-3.5" /> A note is required when the amount differs from the expected fee.
+                  </p>
+                )}
                 {saved === r.id && (
                   <p className="mt-2 flex items-center gap-1 text-xs font-medium text-success">
                     <CheckCircle2 className="h-3.5 w-3.5" /> Saved.

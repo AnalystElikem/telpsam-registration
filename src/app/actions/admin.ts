@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { checkPassword, setAdminCookie, clearAdminCookie, isAdmin } from "@/lib/adminAuth";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { expectedFee } from "@/lib/fees";
 
 export async function loginAdmin(formData: FormData) {
   const pw = String(formData.get("password") || "");
@@ -38,6 +39,19 @@ export async function updateRegistration(formData: FormData) {
   const q = String(formData.get("q") || "").trim();
 
   const supabase = createAdminClient();
+
+  // A note is mandatory whenever the amount differs from the expected fee
+  // (less, more, or 0). Re-checked here in case the browser validation is bypassed.
+  const { data: reg } = await supabase
+    .from("conference_registrations")
+    .select("attendee_type, education_level")
+    .eq("id", id)
+    .maybeSingle();
+  const expected = expectedFee(reg?.attendee_type, reg?.education_level);
+  if ((amount_paid ?? -1) !== expected && !payment_note) {
+    redirect(`/admin?noteReq=${id}${q ? `&q=${encodeURIComponent(q)}` : ""}`);
+  }
+
   await supabase
     .from("conference_registrations")
     .update({
